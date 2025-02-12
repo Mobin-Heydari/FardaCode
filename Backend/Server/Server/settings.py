@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Custom Apps
+    'Blogs.apps.BlogsConfig',
 ]
 
 MIDDLEWARE = [
