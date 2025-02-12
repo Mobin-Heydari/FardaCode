@@ -3,9 +3,26 @@ from .models import BlogCategory, Blog, BlogContent, BlogComment
 
 
 class BlogCategorySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = BlogCategory
         fields = '__all__'
+
+
+    def create(self, validated_data):
+        queryset = BlogCategory.objects.create(**validated_data)
+        queryset.save()
+
+        return queryset
+    
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.slug = validated_data.get('slug', instance.slug)
+        instance.image = validated_data.get('image', instance.image)
+        instance.save()
+        
+        return instance
 
 
 class BlogContentSerializer(serializers.ModelSerializer):
