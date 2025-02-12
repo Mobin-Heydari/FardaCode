@@ -18,8 +18,10 @@ class BlogsRouter(routers.DefaultRouter):
         custom_urls = [
             path('', include([
                 path('', views.BlogViewSet.as_view({'get': 'list'})),
+                path('create/', views.BlogViewSet.as_view({'post': 'create'})),
                 path('<slug:slug>/', include([
-                    path('', views.BlogViewSet.as_view({'get': 'retrivee'})),
+                    path('', views.BlogViewSet.as_view({'get': 'retrieve'})),
+                    path('update/', views.BlogViewSet.as_view({'put': 'update'})),
                 ])),
             ]))
         ]
