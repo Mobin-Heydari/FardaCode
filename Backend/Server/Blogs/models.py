@@ -28,6 +28,8 @@ class Blog(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
 
+    category = models.ForeignKey(BlogCategory, on_delete=models.CASCADE, related_name="blog_category")
+
     content = models.TextField()
 
     views = models.IntegerField(default=0)
