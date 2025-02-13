@@ -21,7 +21,7 @@ class BlogCategorySerializer(serializers.ModelSerializer):
         instance.slug = validated_data.get('slug', instance.slug)
         instance.image = validated_data.get('image', instance.image)
         instance.save()
-        
+
         return instance
 
 
@@ -29,6 +29,26 @@ class BlogContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogContent
         fields = '__all__'
+        
+
+    def create(self, validated_data):
+        blog = self.context.get('blog')
+        content = BlogContent.objects.create(blog=blog, **validated_data)
+        content.save()
+        return content
+    
+    def update(self, instance, validated_data):
+        
+        instance.title = validated_data.get('title', instance.title)
+        instance.slug = validated_data.get('slug', instance.slug)
+        instance.content = validated_data.get('content', instance.content)
+
+        instance.image = validated_data.get('image', instance.image)
+        instance.video = validated_data.get('video', instance.video)
+
+        instance.save()
+        return instance
+
 
 
 class BlogCommentSerializer(serializers.ModelSerializer):
