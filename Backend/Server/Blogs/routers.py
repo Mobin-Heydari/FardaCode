@@ -19,7 +19,7 @@ class BlogsRouter(routers.DefaultRouter):
             path('', include([
                 path('', views.BlogViewSet.as_view({'get': 'list'})),
                 path('create/', views.BlogViewSet.as_view({'post': 'create'})),
-                path('<slug:slug>/', views.BlogViewSet.as_view({'get': 'retrieve'})),
+                path('detail/<slug:slug>/', views.BlogViewSet.as_view({'get': 'retrieve'})),
                 path('update/<slug:slug>/', views.BlogViewSet.as_view({'put': 'update'})),
             ]))
         ]
@@ -38,8 +38,32 @@ class CategoriesRouter(routers.DefaultRouter):
             path('', include([
                 path('', views.CategoryViewSet.as_view({'get': 'list'})),
                 path('create/', views.CategoryViewSet.as_view({'post': 'create'})),
-                path('<slug:slug>/', views.CategoryViewSet.as_view({'get': 'retrieve'})),
+                path('detail/<slug:slug>/', views.CategoryViewSet.as_view({'get': 'retrieve'})),
                 path('update/<slug:slug>/', views.CategoryViewSet.as_view({'put': 'update'})),
+            ]))
+        ]
+
+        return custom_urls
+    
+
+class BlogContentsRouter(routers.DefaultRouter):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.register(r'contents/', views.BlogViewSet, basename='contents')
+
+    
+
+    def get_urls(self):
+
+        custom_urls = [
+            path('', include([
+                path('<slug:slug>/', views.BlogContentViewSet.as_view({'get': 'list'})),
+
+                path('detail/<slug:slug>/<int:content_id>/', views.BlogContentViewSet.as_view({'get': 'retrieve'})),
+
+                path('<slug:slug>/create/', views.BlogContentViewSet.as_view({'post': 'create'})),
+
+                path('update/<int:content_id>/', views.BlogContentViewSet.as_view({'put': 'update'})),
             ]))
         ]
 
