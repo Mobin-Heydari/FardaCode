@@ -29,6 +29,7 @@ class BlogContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogContent
         fields = '__all__'
+        read_only_fields = ['blog']
         
 
     def create(self, validated_data):
@@ -40,7 +41,6 @@ class BlogContentSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         
         instance.title = validated_data.get('title', instance.title)
-        instance.slug = validated_data.get('slug', instance.slug)
         instance.content = validated_data.get('content', instance.content)
 
         instance.image = validated_data.get('image', instance.image)
