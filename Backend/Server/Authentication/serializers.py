@@ -58,7 +58,60 @@ class LoginSerializer(serializers.Serializer):
         
         # Return the validated data
         return data
+
+
+# Create a serializer to validate logout requests
+class LogoutSerializer(serializers.Serializer):
+    """
+    Serializer to validate logout requests.
     
+    This serializer validates the refresh token and returns a success response.
+    """
+    # Define the refresh token field
+    refresh_token = serializers.CharField(max_length=255)
+    
+    # Define the permission classes for the serializer
+    # permission_classes = [IsTokenOwnerOrStaff]  # Not recommended
+    
+    # Define the validate method to validate the data
+    def validate(self, data):
+        """
+        Validate the data.
+        
+        This method checks if the refresh token is valid and if the user has permission to revoke it.
+        """
+        # Get the refresh token from the data
+        refresh_token = data.get('refresh_token')
+        
+        # Check if the refresh token is provided
+        if not refresh_token:
+            # If the refresh token is not provided, raise a validation error
+            raise serializers.ValidationError('Refresh token is required')
+        
+        # Try to get the token object from the refresh token
+        try:
+            token = RefreshToken(refresh_token)
+        except Exception as e:
+            # If the token is invalid, raise a validation error
+            raise serializers.ValidationError('Invalid refresh token')
+        
+        # Get the user ID from the token payload
+        user_id = token.payload.get('user_id')
+        
+        # Get the user instance from the database
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            # If the user does not exist, raise a validation error
+            raise serializers.ValidationError('User does not exist')
+        
+        # Check if the user is the owner of the token or a staff user
+        if self.context['request'].user != user and not self.context['request'].user.is_staff:
+            # If the user is not the owner of the token or a staff user, raise a validation error
+            raise serializers.ValidationError('You do not have permission to revoke this token')
+        
+        # Return the validated data
+        return data
 
 
 class UserRegisterSerializer(serializers.Serializer):

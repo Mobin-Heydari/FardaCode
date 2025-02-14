@@ -1,4 +1,5 @@
 from rest_framework.views import APIView, Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -6,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 
 from User.models import User
 
-from .serializers import LoginSerializer, UserRegisterSerializer
+from .serializers import LoginSerializer, UserRegisterSerializer, LogoutSerializer
 
 
 
@@ -77,6 +78,24 @@ class LoginAPIView(APIView):
         return super().handle_exception(exc)
 
 
+# Create a view to handle logout requests
+class LogoutAPIView(APIView):
+    # Define the permission classes for the view
+    permission_classes = [IsAuthenticated]
+
+    # Define the post method to handle logout requests
+    def post(self, request):
+        # Handle the logout request
+        serializer = LogoutSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            # Revoke the token
+            token = RefreshToken(serializer.validated_data['refresh_token'])
+            token.blacklist()
+            # Return a success response
+            return Response({'message': 'Token revoked successfully'})
+        else:
+            # Return an error response with the validation errors
+            return Response(serializer.errors, status=400)
 
 
 
