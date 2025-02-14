@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 
+from .managers import UserManager
+
 
 
 
@@ -29,8 +31,11 @@ class User(AbstractUser, PermissionsMixin):
     # Set USERNAME_FIELD to email
     USERNAME_FIELD = "email"
 
-    # Set REQUIRED_FIELDS to username and full_name
-    REQUIRED_FIELDS = ["username", "full_name"]
+    # Set REQUIRED_FIELDS to username
+    REQUIRED_FIELDS = ["username"]
+
+    # Set object manager to UserManager
+    objects = UserManager()
 
     class Meta:
         """
