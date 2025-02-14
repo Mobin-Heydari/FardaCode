@@ -42,12 +42,3 @@ class UserSerializer(serializers.ModelSerializer):
             'confirm_password': {'write_only': True},
             'is_verified': {'read_only': True}
         }
-
-    def update(self, instance, validated_data):
-        """
-        Update an existing user instance.
-        """
-        instance.username = validated_data.get('username', instance.username)
-        instance.save()
-
-        return instance
