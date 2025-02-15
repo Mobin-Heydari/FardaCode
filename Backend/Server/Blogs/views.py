@@ -5,11 +5,12 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework import status
 
 from . import serializers, models
-
+from .permissions import IsSafeMethodOrStaff
 
 
 
 class BlogViewSet(ModelViewSet):
+    permission_classes = [IsSafeMethodOrStaff]
     queryset = models.Blog.objects.all()
     serializer_class = serializers.BlogSerializer
     lookup_field = 'slug'
@@ -45,6 +46,7 @@ class BlogViewSet(ModelViewSet):
 
 
 class CategoryViewSet(ModelViewSet):
+    permission_classes = [IsSafeMethodOrStaff]
     queryset = models.BlogCategory.objects.all()
     serializer_class = serializers.BlogCategorySerializer
     lookup_field = 'slug'
@@ -79,6 +81,7 @@ class CategoryViewSet(ModelViewSet):
 
 
 class BlogContentViewSet(ViewSet):
+    permission_classes = [IsSafeMethodOrStaff]
 
     def list(self, request, slug, *args, **kwargs):
         queryset = models.BlogContent.objects.filter(blog__slug=slug)
