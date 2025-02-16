@@ -118,3 +118,34 @@ class CourseContent(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+class CourseSeason(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='seasons')
+    title = models.CharField(max_length=255)
+    summary = models.TextField(blank=True, null=True)  # Brief overview of the season
+    order = models.PositiveIntegerField()
+
+    class Meta:
+        verbose_name = "Course Season"
+        verbose_name_plural = "Course Seasons"
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.course.title} - {self.title}"
+
+class Session(models.Model):
+    season = models.ForeignKey(CourseSeason, on_delete=models.CASCADE, related_name='sessions')
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)  # Brief description of the session
+    video = models.FileField(upload_to="Courses/Sessions/videos/")
+    materials = models.FileField(upload_to="Courses/Sessions/materials")
+    order = models.PositiveIntegerField()
+
+    class Meta:
+        verbose_name = "Session"
+        verbose_name_plural = "Sessions"
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.season.course.title} - {self.season.title} - {self.title}"
