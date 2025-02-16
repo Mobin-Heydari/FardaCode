@@ -1,6 +1,8 @@
 from django.db.models import Manager
 from django.contrib.auth.models import BaseUserManager
 
+from Profiles.models import Profile
+
 
 
 class UserManager(BaseUserManager):
@@ -38,6 +40,12 @@ class UserManager(BaseUserManager):
         except Exception as e:
             # Handle any exceptions that occur during user creation
             raise ValueError("Failed to create user: {}".format(str(e)))
+        
+        # Createing a profile for user
+        profile = Profile.objects.create(user=user)
+        
+        # Saving profile data
+        profile.save()
 
         return user
 
