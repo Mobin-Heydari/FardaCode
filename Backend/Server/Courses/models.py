@@ -98,3 +98,23 @@ class FaqCourse(models.Model):
 
     def __str__(self):
         return self.question
+
+
+
+class CourseContent(models.Model):
+    title = models.CharField(max_length=255, blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+
+    image = models.ImageField(upload_to="Courses/content/images/", null=True, blank=True)
+    video = models.FileField(upload_to="Courses/Content/videos/", null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Course Content"
+        verbose_name_plural = "Course Contents"
+
+
+    def __str__(self):
+        return self.title
