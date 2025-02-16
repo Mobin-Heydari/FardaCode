@@ -79,3 +79,22 @@ class Course(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+
+class FaqCourse(models.Model):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="Faq_Course"
+    )
+
+    question = models.TextField()
+    answer = models.TextField()
+
+    class Meta:
+        verbose_name = "FAQ Course"
+        verbose_name_plural = "FAQs Courses"
+
+    def __str__(self):
+        return self.question
