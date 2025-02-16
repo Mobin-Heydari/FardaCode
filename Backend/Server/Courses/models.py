@@ -11,8 +11,6 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-    
-
 
 
 class Course(models.Model):
@@ -22,19 +20,18 @@ class Course(models.Model):
         COMPLETED = 'COM', 'Completed'
 
     class CoursePricingStatus(models.TextChoices):
-        FREE = 'Fr', 'Free'
-        PURCHASABLE = 'Pr', 'Purchasable'
+        FREE = 'FR', 'Free'
+        PURCHASABLE = 'PR', 'Purchasable'
     
-
     teacher = models.ForeignKey(
         'User.User',
         on_delete=models.CASCADE,
-        related_name='Techer_Courses'
+        related_name='teacher_courses'
     )
 
     students = models.ManyToManyField(
         'User.User', 
-        related_name='User_Courses', 
+        related_name='enrolled_courses', 
         blank=True
     )
 
@@ -42,18 +39,18 @@ class Course(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
 
     category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name='Course_Category'
+        Category, 
+        on_delete=models.CASCADE, 
+        related_name='courses'
     )
 
-    poster = models.ImageField(upload_to="Courses/poster/", blank=True, null=True)
-    banner = models.ImageField(upload_to="Courses/banner/", blank=True, null=True)
+    poster = models.ImageField(upload_to="Courses/posters/", blank=True, null=True)
 
-    introduction = models.FileField(upload_to="Courses/intro/", blank=True, null=True)
+    banner = models.ImageField(upload_to="Courses/banners/", blank=True, null=True)
+
+    introduction = models.FileField(upload_to="Courses/introductions/", blank=True, null=True)
 
     description = models.TextField()
-
     status = models.CharField(
         max_length=3,
         choices=CourseStatus.choices,
@@ -61,25 +58,27 @@ class Course(models.Model):
     )
 
     pricing_status = models.CharField(
-        max_length=2,
-        choices=CoursePricingStatus.choices,
+        max_length=2, 
+        choices=CoursePricingStatus.choices, 
         default=CoursePricingStatus.PURCHASABLE
     )
 
     price = models.BigIntegerField(default=0)
 
+    duration = models.DurationField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
     class Meta:
         verbose_name = "Course"
         verbose_name_plural = "Courses"
+        indexes = [
+            models.Index(fields=['slug']),
+        ]
 
     def __str__(self):
         return self.title
-    
 
 
 class FaqCourse(models.Model):
@@ -121,9 +120,16 @@ class CourseContent(models.Model):
     
 
 class CourseSeason(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='seasons')
+
+    course = models.ForeignKey(
+        Course, 
+        on_delete=models.CASCADE, 
+        related_name='seasons'
+    )
+
     title = models.CharField(max_length=255)
     summary = models.TextField(blank=True, null=True)  # Brief overview of the season
+    duration = models.DurationField(blank=True, null=True)
     order = models.PositiveIntegerField()
 
     class Meta:
@@ -135,12 +141,22 @@ class CourseSeason(models.Model):
         return f"{self.course.title} - {self.title}"
 
 class Session(models.Model):
-    season = models.ForeignKey(CourseSeason, on_delete=models.CASCADE, related_name='sessions')
+
+    season = models.ForeignKey(
+        CourseSeason, 
+        on_delete=models.CASCADE, 
+        related_name='sessions'
+    )
+
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)  # Brief description of the session
-    video = models.FileField(upload_to="Courses/Sessions/videos/")
-    materials = models.FileField(upload_to="Courses/Sessions/materials")
+
+    video = models.FileField(upload_to="Courses/sessions/videos/")
+
+    duration = models.DurationField(blank=True, null=True)
+    materials = models.TextField(blank=True, null=True)
     order = models.PositiveIntegerField()
+
 
     class Meta:
         verbose_name = "Session"
@@ -148,4 +164,4 @@ class Session(models.Model):
         ordering = ['order']
 
     def __str__(self):
-        return f"{self.season.course.title} - {self.season.title} - {self.title}"
+        return f"{self.season.title} - {self.title}"
