@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'User.apps.UserConfig',
     'Authentication.apps.AuthenticationConfig',
     'Profiles.apps.ProfilesConfig',
+    'Courses.apps.CoursesConfig',
 ]
 
 MIDDLEWARE = [
