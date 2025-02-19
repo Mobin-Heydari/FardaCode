@@ -11,6 +11,7 @@ class CourseViewSet(ViewSet):
     """
     A ViewSet for listing, retrieving, creating, updating, and deleting courses.
     """
+    lookup_field = 'slug'
 
     def list(self, request):
         """
@@ -77,6 +78,7 @@ class CourseViewSet(ViewSet):
 
 
 class CategoryViewSet(ViewSet):
+    lookup_field = 'slug'
 
     def list(self, request):
         """
