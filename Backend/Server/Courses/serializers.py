@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Course, CourseSeason, Session, CourseContent
+from .models import Category, Course, CourseSeason, Session, CourseContent, FaqCourse
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -40,27 +40,47 @@ class CourseSeasonSerializer(serializers.ModelSerializer):
         return round(obj.duration.total_seconds() / 3600, 2)  # Convert duration to hours
 
 
+class CourseContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseContent
+        fields = [
+            'id', 'title', 'content', 'image', 'video', 
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class FaqCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FaqCourse
+        fields = [
+            'id', 'question', 'answer', 
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
 class CourseSerializer(serializers.ModelSerializer):
-    seasons = CourseSeasonSerializer(many=True, read_only=True)  # Nested seasons
-    total_seasons = serializers.IntegerField(source='seasons.count', read_only=True)  # Adding total number of seasons
-    total_students = serializers.IntegerField(source='students.count', read_only=True)  # Adding total number of students
-    price_display = serializers.SerializerMethodField()  # Custom field for formatted price
+    contents = CourseContentSerializer(many=True)
+    faqs = FaqCourseSerializer(many=True)
+    total_students = serializers.IntegerField(source='students.count', read_only=True)
+    price_display = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
         fields = [
             'id', 'title', 'slug', 'description', 'category', 'status',
-            'pricing_status', 'price', 'price_display', 'total_seasons',
-            'total_students', 'poster', 'banner', 'introduction',
-            'duration', 'created_at', 'updated_at', 'seasons',
+            'pricing_status', 'price', 'price_display', 'total_students',
+            'poster', 'banner', 'introduction', 'duration', 
+            'created_at', 'updated_at', 'contents', 'faqs'
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+        extra_kwargs = {
+            'teacher': {'read_only': True},
+            'students': {'read_only': True},
+        }
 
     def get_price_display(self, obj):
-        return f"${obj.price / 100:.2f}"  # Format price as currency
+        return f"${obj.price / 100:.2f}"
 
 
-class CourseContentSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = CourseContent
-        fields = ['id', 'title', 'content', 'image', 'video', 'course', 'created_at', 'updated_at']
